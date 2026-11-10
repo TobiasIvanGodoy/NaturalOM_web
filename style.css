@@ -1,0 +1,341 @@
+/* Modelo de celular SAMSUNG A17, dimenciones: 1080x2340 */
+@import url('https://fonts.googleapis.com/css2?family=Dancing%20Script:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* ==========================================================================
+   RESET
+   ========================================================================== */
+
+html {
+    overscroll-behavior: none;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: clamp(11px, 3vh, 50px);
+}
+
+body {
+    background: white;
+    background-attachment: fixed;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    overscroll-behavior: none;
+}
+
+/* ==========================================================================
+   SOMBRA / MENÚS SUPERPUESTOS
+   ========================================================================== */
+
+.sombra {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   HUD
+   ========================================================================== */
+
+.contenedorRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+
+}
+
+#superior {
+    z-index: 1;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    height: 7vh;
+    padding: 1vh 1vw;
+    box-shadow: 0 0.5vh 1vh rgba(0, 0, 0, 0.4);
+    
+}
+
+#inferior {
+    z-index: 1;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    height: 6vh;
+    box-shadow: 0 -0.5vh 1vh rgba(0, 0, 0, 0.4);
+}
+
+#saldo {
+    display: flex;
+    align-items: center;
+    font-size: 3vh;
+
+    height: 50%;
+    padding: 2vh 2vw;
+
+    border: 1px solid black;
+    border-radius: 2vw;
+    background-color: rgba(255, 255, 0, 0.6);
+
+}
+
+/* ==========================================================================
+   BOTONES
+   ========================================================================== */
+.saldo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+button:hover {
+    filter: brightness(.7);
+}
+
+.btnSeccion {
+    flex: 1;
+    height: 100%;
+    border: none;
+    background-color: white;
+}
+
+.btnSeccion img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+#btnCerrar {
+    height: 100%;
+    aspect-ratio: 1;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+#btnCerrar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+#sumarSaldo {
+    height: 100%;
+    aspect-ratio: 1;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+#sumarSaldo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+.btnEliminar {
+    height: 100%;
+    aspect-ratio: 1;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.btnEliminar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+.btnAgregar {
+    background-color: lightcyan;
+    border-radius: 2vh;
+    padding: 1vh 10vw;
+}
+
+/* ==========================================================================
+   CONTENIDO PRINCIPAL
+   ========================================================================== */
+
+.contenedorSeccion {
+    position: fixed;
+    top: 7vh;
+    bottom: 6vh;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    padding: 1vh;
+
+    overflow: hidden; 
+}
+
+.contenedorTabla {
+    flex: 1;
+
+    overflow: auto;
+}
+
+#panelIncial {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color:rgba(173, 216, 230, 0.6);
+    border-radius: 1vh;
+    gap: 3vh;
+}
+
+#logo {
+    width: clamp(100px, 20%, 400px);
+    aspect-ratio: 1;
+
+    border-radius: 50vw;
+    border: none;
+}
+
+#panelIncial p {
+    font-family: 'Dancing Script';
+    font-size: 6vh;
+    background-color: white;
+    border-radius: 5vw;
+    padding: 2vh 5vw;
+
+}
+/* ==========================================================================
+   TABLAS
+   ========================================================================== */
+
+table {
+    min-width: 100%;
+    width: max-content;
+
+    margin: 0;
+
+    table-layout: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    font-size: 2.5vh;
+}
+
+table th,
+table td {
+    padding: 0.5vh 2vw;
+    text-align: center;
+    border-style: solid;
+    border-width: 0.1vh;
+    white-space: nowrap;
+}
+
+table th {
+    position: sticky;
+    top: -1px;
+    z-index: 1;
+
+    background-color: lightgreen;
+}
+
+table td {
+    background-color: white;
+}
+
+.celda {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 4vw;
+}
+
+/* Estados de filas/celdas */
+
+.gasto {
+    background-color: rgba(255, 0, 0, .2);
+}
+
+.ganancia {
+    background-color: rgba(0, 255, 0, .2);
+}
+
+/* ==========================================================================
+   FORMULARIOS
+   ========================================================================== */
+
+.contenedorMenu {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 1vh;
+    padding: 2vh 2vw;
+
+    background: white;
+    border-radius: 1vh;
+    box-shadow: 0 1vh 1.5vh rgba(0, 0, 0, 0.4);
+
+    z-index: 2;
+}
+
+.campo {
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+    padding: 1vh 2vw;
+}
+
+.info {
+    padding: 1vh 2vw;
+    background-color: rgba(0, 255, 0, 0.4);
+    border-radius: 4vh;
+}
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+
+.animacion1 {
+    animation: Aparezco 3s forwards;
+}
+
+@keyframes Aparezco {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================================================
+   UTILIDADES
+   ========================================================================== */
+
+.oculto {
+    display: none;
+}
