@@ -122,6 +122,7 @@ function iniciarAplicacion() {
     configurarBotones();
     configurarSaldoInicial();
     mostrarbalance();
+    
 }
 
 function configurarSaldoInicial() {
@@ -146,6 +147,19 @@ function configurarSaldoInicial() {
         btnConfirmar.textContent = "Confirmar";
         contenedor.appendChild(btnConfirmar);
 
+        const btnDescarga = document.createElement("button");
+        btnDescarga.classList.add("btnAgregar");
+        btnDescarga.textContent = "Descargar backup";
+        btnDescarga.id = "descarga";
+        contenedor.appendChild(btnDescarga);
+
+
+        const btnCarga = document.createElement("button");
+        btnCarga.classList.add("btnAgregar");
+        btnCarga.textContent = "Cargar backup";
+        btnCarga.id = "carga";
+        contenedor.appendChild(btnCarga);
+
         btnConfirmar.addEventListener("click", function () {
             const valorIngresado = document.getElementById("inicial").value;
 
@@ -159,7 +173,219 @@ function configurarSaldoInicial() {
             overlay.classList.add("oculto");
             mostrarbalance();
         });
+
+        configurarBackup();
     });
+}
+
+function configurarBackup() {
+    const btnDescarga = document.getElementById("descarga");
+    const btnCarga = document.getElementById("carga");
+
+    if (btnDescarga) {
+        btnDescarga.type = "button";
+        btnDescarga.addEventListener("click", descargarBackup);
+    }
+
+    if (btnCarga) {
+        btnCarga.type = "button";
+
+        const inputArchivo = document.createElement("input");
+
+        inputArchivo.type = "file";
+        inputArchivo.accept = ".json,application/json";
+        inputArchivo.style.display = "none";
+
+        document.body.appendChild(inputArchivo);
+
+        btnCarga.addEventListener("click", function () {
+            inputArchivo.click();
+        });
+
+        inputArchivo.addEventListener("change", function () {
+            const archivo = inputArchivo.files[0];
+
+            if (archivo) {
+                importarBackup(archivo);
+            }
+
+            inputArchivo.value = "";
+        });
+    }
+}
+
+function descargarBackup() {
+    const backup = {
+        aplicacion: "inventario-gastos",
+        version: 1,
+        fechaExportacion: new Date().toISOString(),
+
+        datos: {
+            productos: productos,
+            movimientos: movimientos,
+            gastos: gastos,
+            distribuidores: distribuidores,
+            saldoInicial: saldoInicial
+        }
+    };
+
+    const contenido = JSON.stringify(backup, null, 4);
+
+    const archivo = new Blob(
+        [contenido],
+        { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(archivo);
+
+    const enlace = document.createElement("a");
+    enlace.href = url;
+
+    const ahora = new Date();
+
+    const fecha =
+        `${ahora.getFullYear()}-` +
+        `${String(ahora.getMonth() + 1).padStart(2, "0")}-` +
+        `${String(ahora.getDate()).padStart(2, "0")}`;
+
+    enlace.download = `backup-inventario-${fecha}.json`;
+
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+
+    setTimeout(function () {
+        URL.revokeObjectURL(url);
+    }, 1000);
+}
+
+// --------------------------------------------------
+// Validar estructura del backup
+// --------------------------------------------------
+
+function validarDiccionarioBackup(diccionario) {
+    if (
+        diccionario === null ||
+        typeof diccionario !== "object" ||
+        Array.isArray(diccionario)
+    ) {
+        return false;
+    }
+
+    return Object.values(diccionario).every(registro =>
+        registro !== null &&
+        typeof registro === "object" &&
+        !Array.isArray(registro)
+    );
+}
+
+function validarBackup(backup) {
+    if (
+        !backup ||
+        typeof backup !== "object" ||
+        backup.aplicacion !== "inventario-gastos" ||
+        backup.version !== 1
+    ) {
+        return false;
+    }
+
+    const datos = backup.datos;
+
+    if (!datos || typeof datos !== "object") {
+        return false;
+    }
+
+    return (
+        validarDiccionarioBackup(datos.productos) &&
+        validarDiccionarioBackup(datos.movimientos) &&
+        validarDiccionarioBackup(datos.gastos) &&
+        validarDiccionarioBackup(datos.distribuidores) &&
+        typeof datos.saldoInicial === "number" &&
+        Number.isFinite(datos.saldoInicial)
+    );
+}
+
+function importarBackup(archivo) {
+    const lector = new FileReader();
+
+    lector.onload = function () {
+        let backup;
+
+        try {
+            backup = JSON.parse(lector.result);
+        } catch (error) {
+            alert("El archivo seleccionado no contiene un JSON válido.");
+            return;
+        }
+
+        if (!validarBackup(backup)) {
+            alert("El archivo no es un backup válido de esta aplicación.");
+            return;
+        }
+
+        const confirmar = confirm(
+            "¿Deseás importar este backup?\n\n" +
+            "Los datos actuales serán reemplazados por los del archivo."
+        );
+
+        if (!confirmar) {
+            return;
+        }
+
+        const datos = backup.datos;
+
+        const nuevosDatos = {
+            productos: JSON.stringify(datos.productos),
+            movimientos: JSON.stringify(datos.movimientos),
+            gastos: JSON.stringify(datos.gastos),
+            distribuidores: JSON.stringify(datos.distribuidores),
+            saldoInicial: JSON.stringify(datos.saldoInicial)
+        };
+
+        const claves = Object.keys(nuevosDatos);
+        const anteriores = {};
+
+        try {
+            for (const clave of claves) {
+                anteriores[clave] = localStorage.getItem(clave);
+            }
+
+            for (const clave of claves) {
+                localStorage.setItem(clave, nuevosDatos[clave]);
+            }
+
+        } catch (error) {
+            console.error("Error al importar el backup:", error);
+
+            for (const clave of Object.keys(anteriores)) {
+                try {
+                    if (anteriores[clave] === null) {
+                        localStorage.removeItem(clave);
+                    } else {
+                        localStorage.setItem(clave, anteriores[clave]);
+                    }
+                } catch (errorRestauracion) {
+                    console.error(
+                        `No se pudo restaurar ${clave}:`,
+                        errorRestauracion
+                    );
+                }
+            }
+
+            alert("No se pudo importar el backup. Los datos anteriores se conservarán siempre que sea posible.");
+            return;
+        }
+
+        alert("Backup importado correctamente. La aplicación se actualizará.");
+
+        location.reload();
+    };
+
+    lector.onerror = function () {
+        alert("No se pudo leer el archivo seleccionado.");
+    };
+
+    lector.readAsText(archivo);
 }
 
 function configurarBotones() {

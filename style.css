@@ -217,9 +217,18 @@ button:hover {
     border: none;
 }
 
-#panelIncial p {
+#panelIncial #saludo {
     font-family: 'Dancing Script';
     font-size: 6vh;
+    background-color: white;
+    border-radius: 5vw;
+    padding: 2vh 5vw;
+
+}
+
+#panelIncial #recordatorio {
+    text-align: center;
+    font-size: 2vh;
     background-color: white;
     border-radius: 5vw;
     padding: 2vh 5vw;
